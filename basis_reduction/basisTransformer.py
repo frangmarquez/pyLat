@@ -8,6 +8,9 @@ class BasisTransformer():
     def isIndependent(self, basis):
         pass
 
+    def areEquivalent(self, basis1, basis2):
+        pass
+
     def orthogonalize_basis(self, basis):
         pass
 
