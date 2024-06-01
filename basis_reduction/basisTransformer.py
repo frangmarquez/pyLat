@@ -27,19 +27,23 @@ class BasisTransformer():
         rango_base_2 = np.linalg.matrix_rank(basis2)
         return rango_union == rango_base_1 == rango_base_2
 
-    def orthogonalize_basis(self, basis):
+    def orthogonalize_basis(self, basis, mu_coefs=False):
         
-        num_vectors = basis.shape[1]
+        basis = np.array(basis, dtype=float)
+        n = basis.shape[1]
         ortho_basis = np.zeros_like(basis)
+        mu = np.zeros((n, n))
         
-        for i in range(num_vectors):
-            vec = basis[:, i]
+        for i in range(n):
+            ortho_basis[:, i] = basis[:, i]
             for j in range(i):
-                proj = np.dot(ortho_basis[:, j], vec) / np.dot(ortho_basis[:, j], ortho_basis[:, j])
-                vec -= proj * ortho_basis[:, j]
-            ortho_basis[:, i] = vec
+                mu[i, j] = np.dot(basis[:, i], ortho_basis[:, j]) / np.dot(ortho_basis[:, j], ortho_basis[:, j])
+                ortho_basis[:, i] -= mu[i, j] * ortho_basis[:, j]
         
-        return ortho_basis
+        if mu_coefs:
+            return ortho_basis, mu
+        else:
+            return ortho_basis
         
     def lll_reduce(self, basis, delta=0.75):
 

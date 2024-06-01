@@ -1,1 +1,1 @@
-from . import basisTransformer
+from .basisTransformer import BasisTransformer
