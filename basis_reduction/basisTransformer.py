@@ -20,6 +20,11 @@ class BasisTransformer():
                 if not np.isclose(np.dot(basis[:, i], basis[:, j]), 0):
                     return False
         return True
+    
+    def order_columns_by_length(self,lat):
+        norms = np.linalg.norm(lat, axis=0)
+        sorted_indices = np.argsort(norms)
+        return sorted_indices
 
     def areEquivalent(self, basis1, basis2):
         rango_union = np.linalg.matrix_rank(np.hstack((basis1, basis2)))

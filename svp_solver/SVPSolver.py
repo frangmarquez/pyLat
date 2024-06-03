@@ -8,10 +8,7 @@ class SVPSolver:
     def __init__(self,lattice):
         self.lattice = lattice
 
-    def order_columns_by_length(self,lat):
-        norms = np.linalg.norm(lat, axis=0)
-        sorted_indices = np.argsort(norms)
-        return sorted_indices
+    
 
     def toLattice(self, lattice):
         if all(coef.is_integer() for row in lattice for coef in row):
@@ -34,7 +31,7 @@ class SVPSolver:
         basis = self.lattice
         ortho_basis = ba.orthogonalize_basis(basis)
 
-        ordered_basis = self.order_columns_by_length(basis)
+        ordered_basis = ba.order_columns_by_length(basis)
         basis = basis[:, ordered_basis]
         ortho_basis = ortho_basis[:, ordered_basis]
         mu = np.zeros(ortho_basis.shape)

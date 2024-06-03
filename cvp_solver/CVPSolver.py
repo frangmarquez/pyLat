@@ -59,6 +59,69 @@ class CVPSolver:
         
         return possible_solutions
 
+    def enumeration(self,lattice):
+
+        # En construccion
+
+        target = self.target
+        
+        ba = BasisTransformer()
+        basis = self.lattice
+        ortho_basis = ba.orthogonalize_basis(basis)
+
+        ordered_basis = ba.order_columns_by_length(lattice)
+        basis = basis[:, ordered_basis]
+        ortho_basis = ortho_basis[:, ordered_basis]
+        mu = np.zeros(ortho_basis.shape)
+
+        for i in range(ortho_basis.shape[1]):
+            for j in range(0,i+1):
+                mu[j, i] = np.dot(ortho_basis[:, i], ortho_basis[:, j]) / np.dot(ortho_basis[:, j], ortho_basis[:, j])
+                mu[i, j] = mu[j, i]
+        
+        A = np.dot(ortho_basis[:, 0], ortho_basis[:,0])
+        B = np.array([np.dot(ortho_basis[:, i], ortho_basis[:, i]) for i in range(ortho_basis.shape[1])])
+        n = basis.shape[1]
+
+        y = np.linalg.solve(ortho_basis, target)
+        x = np.zeros(n, dtype=np.int64)
+        z = np.zeros(n, dtype=np.float64)
+
+        nearest_vector = None
+        nearest_length = float('inf')
+        
+        def enumerate_vectors(i):
+            nonlocal nearest_length,nearest_vector,n
+            
+            if i == -1:
+                v = basis @ x
+                print(v)
+                e_length = np.linalg.norm(v - target)**2
+                if e_length <= nearest_length:
+                    nearest_vector = v
+                    nearest_length = e_length
+                return
+
+            M_i = np.sqrt((A - np.dot((z[i+1:] - y[i+1:])**2, B[i+1:])) / B[i])
+            N_i = np.sum([mu[j, i+1] * x[j] for j in range(i+1, n)])
+        
+            try:
+
+                lower_bound = int(np.ceil(y[i] - M_i - N_i))
+                upper_bound = int(np.floor(y[i] + M_i - N_i))
+                
+                for xi in range(lower_bound, upper_bound + 1):
+                    x[i] = xi
+                    z[i] = x[i] + np.sum([mu[j, i+1] * x[j] for j in range(i+1, n)])
+                    enumerate_vectors(i - 1)
+            
+            except:
+                pass
+
+        enumerate_vectors(n - 1)
+        
+        return nearest_vector
+
     def solveCVP(self, method='BNP', reduction = False, M = None):
 
         if reduction:
@@ -76,7 +139,7 @@ class CVPSolver:
             else:
                 solution = self.EmbbedingSolver(lattice, self.target, M)
         elif method=='enumeration':
-            pass
+            solution = self.enumeration(lattice)
         else:
             raise ValueError('Unknown method: ' + method)
         return solution
@@ -84,15 +147,14 @@ class CVPSolver:
 
 if __name__ == '__main__':
 
-
-
-    lattice = np.array([[45, 25, -10],
-                        [-77,57,  0], 
-                        [-13,13, 27]])
+    lattice = np.array([[2, 4, 2],
+                        [0, 0, 2], 
+                        [6, 5, 4]])
     
-    comb = [567, 25, -383]
-    target = np.array([23425, -3995, -10015])
+    target = np.array([35, -13, -82])
 
     solver = CVPSolver(lattice, target)
-    solution = solver.solveCVP(method = 'embbeding', M = 1)[0]
-    print(solution)
+    solution1 = solver.solveCVP(method = 'BNP')
+    print(f'Comb lin that gives the solution:{np.linalg.solve(lattice, solution1)}')
+    print(solution1)
+    print('------------------------------')
