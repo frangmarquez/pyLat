@@ -11,6 +11,9 @@ class CVPSolver:
         self.target = target
 
     def BCVSolver(self, lattice, target):
+
+        """Method to solve CVP with BCV"""
+        
         real_coefs = np.linalg.solve(lattice, target)
         approx_coefs = np.round(real_coefs)
         solution = np.array(lattice @ approx_coefs, dtype=np.int64)
@@ -18,6 +21,9 @@ class CVPSolver:
 
 
     def BNPSolver(self, lattice, target):
+
+        """Method to solve CVP with BNP"""
+
         ba = BasisTransformer()
 
         ortho_basis = ba.orthogonalize_basis(lattice)
@@ -36,6 +42,8 @@ class CVPSolver:
         return solution
     
     def EmbbedingSolver(self, lattice, target, M):
+
+        """Embbeding method to solve SVP"""
 
         n = lattice.shape[1]
         
@@ -61,7 +69,7 @@ class CVPSolver:
 
     def enumeration(self,lattice):
 
-        # En construccion
+        """Enumeration method to solve SVP"""
 
         target = self.target
         
@@ -123,6 +131,8 @@ class CVPSolver:
         return nearest_vector
 
     def solveCVP(self, method='BNP', reduction = False, M = None):
+
+        """ Method to solve CVP with BNP, BCV, embbeding, or enumeration method. """
 
         if reduction:
             lattice = BasisTransformer().reduce_basis(self.lattice)
