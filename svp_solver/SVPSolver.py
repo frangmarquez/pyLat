@@ -11,6 +11,7 @@ class SVPSolver:
     
 
     def toLattice(self, lattice):
+        """Convert a basis to a lattice integer base"""
         if all(coef.is_integer() for row in lattice for coef in row):
             return lattice.astype(np.int64)
         else:
@@ -25,6 +26,8 @@ class SVPSolver:
             raise ValueError(f"Unknown method: {method}")
     
     def enumeration(self, bag):
+
+        """Enumeration method to solve SVP"""
         
         ba = BasisTransformer()
 
@@ -95,6 +98,17 @@ class SVPSolver:
             return shortest_vector, tree
     
     def print_tree(self,tree, level=0):
+        """
+        Recursively prints a tree structure.
+
+        Args:
+            tree (list): The tree structure to be printed.
+            level (int, optional): The current level of the tree. Defaults to 0.
+
+        Returns:
+            None
+        """
+        """"""
         for node in tree:
             if len(node)==2:
                 value, children = node

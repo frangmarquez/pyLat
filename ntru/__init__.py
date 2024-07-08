@@ -1,0 +1,1 @@
+from .NTRU import NTRUEncrypt

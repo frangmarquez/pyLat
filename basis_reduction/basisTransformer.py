@@ -6,11 +6,16 @@ class BasisTransformer():
         pass
 
     def isIndependent(self, basis):
+
+        """Check if a basis is independent."""
+        
         rango = np.linalg.matrix_rank(basis) 
         num_cols = basis.shape[1]
         return rango == num_cols
     
     def isOrthogonal(self, basis):
+
+        """Check if a basis is orthogonal."""
         
         basis = np.array(basis, dtype=float)
         num_vectors = basis.shape[1]
@@ -22,11 +27,17 @@ class BasisTransformer():
         return True
     
     def order_columns_by_length(self,lat):
+
+        """Order the columns of a basis matrix by their length."""
+
         norms = np.linalg.norm(lat, axis=0)
         sorted_indices = np.argsort(norms)
         return sorted_indices
 
     def areEquivalent(self, basis1, basis2):
+
+        """Check if two bases are equivalent."""
+
         rango_union = np.linalg.matrix_rank(np.hstack((basis1, basis2)))
         rango_base_1 = np.linalg.matrix_rank(basis1) 
         rango_base_2 = np.linalg.matrix_rank(basis2)
@@ -34,6 +45,8 @@ class BasisTransformer():
 
     def orthogonalize_basis(self, basis, mu_coefs=False):
         
+        """Orthogonalize the columns of basis using Gram-Schmidt."""
+
         basis = np.array(basis, dtype=float)
         n = basis.shape[1]
         ortho_basis = np.zeros_like(basis)
